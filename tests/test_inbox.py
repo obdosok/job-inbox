@@ -1,12 +1,17 @@
+import contextlib
+import http.client
+import io
 import os
 import pathlib
 import tempfile
+import threading
 import unittest
 import urllib.error
+from http.server import ThreadingHTTPServer
 from pathlib import Path
 from unittest.mock import patch
 
-from src import advise, candidate, funnel, providers
+from src import advise, candidate, cli, funnel, providers
 from src.advise import validate_assessment
 from src.adapters import FileAdapter, GreenhouseAdapter, ManualPasteAdapter, NoFluffJobsAdapter
 from src.db import JobDatabase
@@ -16,6 +21,7 @@ from src.models import Job
 from src.parse import importance, us_only_requirement, weight_of
 from src.score import actual_work_shape, hard_blockers, rate
 from src.service import assess_job, ingest_jobs
+from src.web import JobInboxHandler
 
 
 _SAVED_KEYS: dict[str, str] = {}
@@ -260,7 +266,7 @@ class AdvisorTests(unittest.TestCase):
                                                       "claim": "Feels risky.", "job_evidence": "", "profile_evidence": ""}]))
 
     def test_missing_dimension_is_rejected(self):
-        with self.assertRaisesRegex(ValueError, "five dimensions"):
+        with self.assertRaisesRegex(ValueError, f"exactly these {len(advise.DIMENSIONS)} dimensions"):
             validate_assessment(assessment(dimension_scores={"capability_fit": 5}))
 
 
@@ -544,6 +550,58 @@ class DatabaseTests(unittest.TestCase):
             ingest_jobs(db, "manual", {"description": "Senior Vue Nuxt TypeScript role improving a mature application."}, "A")
             self.assertEqual(1, db.summary()["jobs_found"])
             self.assertEqual(1, len(db.list_jobs("today")))
+
+
+class LocalServerTests(unittest.TestCase):
+    """The server is on this machine, but the browser visits other sites."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.directory = tempfile.TemporaryDirectory(ignore_cleanup_errors=True)
+        cls.server = ThreadingHTTPServer(("127.0.0.1", 0), JobInboxHandler)
+        cls.server.database = JobDatabase(Path(cls.directory.name) / "test.sqlite3")
+        cls.port = cls.server.server_address[1]
+        threading.Thread(target=cls.server.serve_forever, daemon=True).start()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.server.shutdown()
+        cls.server.server_close()
+        cls.directory.cleanup()
+
+    def status(self, method, path, headers):
+        connection = http.client.HTTPConnection("127.0.0.1", self.port, timeout=5)
+        try:
+            connection.request(method, path, body=b"{}" if method == "POST" else None, headers=headers)
+            return connection.getresponse().status
+        finally:
+            connection.close()
+
+    def test_the_inbox_page_itself_is_served(self):
+        own = {"Origin": f"http://127.0.0.1:{self.port}", "Content-Type": "application/json"}
+        self.assertNotIn(self.status("POST", "/api/outcomes", own), (403, 415))
+        self.assertEqual(200, self.status("GET", "/api/summary", {}))
+
+    def test_another_site_cannot_queue_a_paid_assessment(self):
+        headers = {"Origin": "https://evil.example", "Content-Type": "application/json"}
+        self.assertEqual(403, self.status("POST", "/api/jobs/job1/assess", headers))
+
+    def test_a_plain_form_post_is_refused(self):
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        self.assertEqual(415, self.status("POST", "/api/jobs/job1/assess", headers))
+
+    def test_a_rebound_hostname_cannot_read_the_inbox(self):
+        self.assertEqual(403, self.status("GET", "/api/jobs", {"Host": f"evil.example:{self.port}"}))
+
+
+class RegressionCommandTests(unittest.TestCase):
+    def test_regression_stays_offline_with_a_key_configured(self):
+        """The seeded cases pin deterministic decisions; a model call would cost money and drift."""
+        with patch.dict("os.environ", {"ANTHROPIC_API_KEY": "sk-ant-test"}), \
+                patch("src.extraction.get_default_extractor", side_effect=AssertionError("regression called the model")), \
+                patch("src.cli.save_evaluation"), \
+                contextlib.redirect_stdout(io.StringIO()):
+            cli.cmd_regression(None)
 
 
 if __name__ == "__main__":

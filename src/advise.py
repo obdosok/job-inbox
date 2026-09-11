@@ -130,7 +130,7 @@ def validate_assessment(data: dict[str, Any]) -> dict[str, Any]:
         raise ValueError(f"Assessment is missing: {sorted(missing)}")
     scores = data["dimension_scores"]
     if not isinstance(scores, dict) or set(scores) != set(DIMENSIONS):
-        raise ValueError("Assessment must score exactly the five dimensions")
+        raise ValueError(f"Assessment must score exactly these {len(DIMENSIONS)} dimensions: {', '.join(DIMENSIONS)}")
     for name, value in scores.items():
         scores[name] = _score(value, f"Dimension {name}")
     match = data["match"]

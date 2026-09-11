@@ -5,9 +5,10 @@ first result from a remote aggregator was "Business Development Manager". At
 roughly ten cents an assessment, sending the whole feed to the advisor costs
 tens of dollars a day for an answer the title already gave away.
 
-So the funnel narrows in three stages, cheapest first:
+So the funnel narrows in four stages, cheapest first:
 
     fetched  -> title filter (free, no parsing)
+             -> de-duplicate (free; one opening is reposted once per region)
              -> deterministic score (free, `src.score`)
              -> advisor (paid, capped)
 

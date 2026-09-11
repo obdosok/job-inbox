@@ -78,12 +78,17 @@ def cmd_outcome_add(args: argparse.Namespace) -> int:
 
 
 def cmd_regression(_: argparse.Namespace) -> int:
+    # The seeded cases pin deterministic decisions. With a key in `.env` the
+    # default extractor would call the model for every case: real spend, and
+    # expectations that drift with the model's reading.
+    from .extraction import HeuristicExtractor
+
     cases = json.loads((ROOT / "regression" / "cases.yaml").read_text(encoding="utf-8"))["cases"]
     failures = 0
     for case in cases:
         raw = ROOT / case["job_file"]
         meta = ROOT / case["meta_file"]
-        result = evaluate(load_job(str(raw), None, case["track"], str(meta)))
+        result = evaluate(load_job(str(raw), None, case["track"], str(meta), extractor=HeuristicExtractor()))
         save_evaluation(result)
         ok = result.decision == case["expected"]
         failures += not ok

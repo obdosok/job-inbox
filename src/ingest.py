@@ -43,7 +43,7 @@ def infer_metadata(text: str) -> dict[str, Any]:
     return meta
 
 
-def load_job(path: str | None, text: str | None, track: str, meta_path: str | None = None, extract_profile: bool = True) -> Job:
+def load_job(path: str | None, text: str | None, track: str, meta_path: str | None = None, extract_profile: bool = True, extractor: Any = None) -> Job:
     if path:
         source_path = Path(path)
         raw = source_path.read_text(encoding="utf-8")
@@ -62,5 +62,5 @@ def load_job(path: str | None, text: str | None, track: str, meta_path: str | No
     if extract_profile:
         from .extraction import get_default_extractor
 
-        profile = get_default_extractor().extract(raw.strip())
+        profile = (extractor or get_default_extractor()).extract(raw.strip())
     return Job(job_id=job_id, text=raw.strip(), track=track.upper(), source=source, metadata=metadata, profile=profile)

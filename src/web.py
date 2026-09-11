@@ -17,6 +17,7 @@ from .service import assess_job, ingest_jobs
 ROOT = Path(__file__).resolve().parents[1]
 WEB_ROOT = ROOT / "web"
 MAX_BODY = 2 * 1024 * 1024
+LOCAL_NAMES = ("127.0.0.1", "localhost", "[::1]")
 
 
 class JobInboxHandler(BaseHTTPRequestHandler):
@@ -25,6 +26,22 @@ class JobInboxHandler(BaseHTTPRequestHandler):
     @property
     def db(self) -> JobDatabase:
         return self.server.database  # type: ignore[attr-defined]
+
+    def _trusted(self) -> bool:
+        """Refuse what another site's page sends through the browser.
+
+        The server listens only on this machine, but any page open in the
+        browser can still reach it: a cross-site form or fetch could queue a
+        paid assessment, and a DNS-rebinding page could read the inbox. So the
+        Host header must name this server, and a request that states an Origin
+        must come from here. Tools such as curl send no Origin and are allowed.
+        """
+        bound, port = self.server.server_address[:2]
+        allowed = {f"{name}:{port}" for name in (*LOCAL_NAMES, bound)}
+        if self.headers.get("Host", "") not in allowed:
+            return False
+        origin = self.headers.get("Origin")
+        return origin is None or origin in {f"http://{host}" for host in allowed}
 
     def log_message(self, format: str, *args: object) -> None:
         print(f"[{self.log_date_time_string()}] {format % args}")
@@ -64,6 +81,9 @@ class JobInboxHandler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self) -> None:
+        if not self._trusted():
+            self._error(403, "Request refused: it did not come from this Job Inbox")
+            return
         parsed = urlparse(self.path)
         try:
             if parsed.path == "/api/jobs":
@@ -93,6 +113,14 @@ class JobInboxHandler(BaseHTTPRequestHandler):
             self._error(500, f"Request failed: {error}")
 
     def do_POST(self) -> None:
+        if not self._trusted():
+            self._error(403, "Request refused: it did not come from this Job Inbox")
+            return
+        # A plain HTML form cannot send JSON, and a cross-site fetch that does
+        # needs a CORS preflight this server never grants.
+        if not self.headers.get("Content-Type", "").startswith("application/json"):
+            self._error(415, "Content-Type must be application/json")
+            return
         parsed = urlparse(self.path)
         try:
             payload = self._payload()

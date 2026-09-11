@@ -7,3 +7,6 @@ data/*.sqlite3*
 !.env.example
 *.pdf
 candidate/profile.md
+
+# Written by `evaluate` and `regression` runs.
+jobs/evaluated/
