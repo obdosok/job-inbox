@@ -1,0 +1,5 @@
+Senior React/TypeScript Frontend Engineer
+
+Rate: $80-160/h. Posted 30 minutes ago. 50+ proposals, 0 interviewing. Flexible hours.
+
+Join a production product team building a complex data-heavy application. Own React, Next.js and TypeScript frontend implementation, API and data-flow design, performance improvements and migration of legacy application surfaces. We value pragmatic senior judgment, product understanding, autonomy and safe iterative delivery more than exact framework tenure.

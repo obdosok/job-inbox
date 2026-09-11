@@ -1,0 +1,3 @@
+Build a Quebec Real Estate Brokerage Platform
+
+This is a 30-week full-time engagement for one long-term technical partner. One person will own architecture, React frontend, backend and PostgreSQL, a design system, full screen mockups, brand identity, React Native mobile apps, app-store release, exhaustive QA, security review and analytics. You must publish the mobile product to both app stores and remain responsible for all implementation and maintenance.

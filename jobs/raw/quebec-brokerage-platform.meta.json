@@ -1,0 +1,1 @@
+{"rate_min": 60, "rate_max": 80, "rate_period": "hour", "currency": "USD", "duration_weeks": 30, "hours_per_week": 40, "freshness_minutes": 720, "proposals": 20, "interviewing": 3}

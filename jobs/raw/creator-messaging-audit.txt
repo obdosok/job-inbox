@@ -1,0 +1,3 @@
+Creator Messaging V1 Product Audit
+
+We want a product-minded senior engineer to own an initial audit of our creator messaging V1. The first milestone is a screen-by-screen UX review, exhaustive QA of messaging states, manual inspection of responsive details, edge-case cataloguing and pixel-level comparison to designs. After the audit, propose architecture and implementation improvements.

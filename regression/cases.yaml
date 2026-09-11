@@ -1,0 +1,8 @@
+{
+  "cases": [
+    {"id": "shopify-public-app", "job_file": "jobs/raw/shopify-public-app.txt", "meta_file": "jobs/raw/shopify-public-app.meta.json", "track": "B", "expected": "SKIP"},
+    {"id": "creator-messaging-audit", "job_file": "jobs/raw/creator-messaging-audit.txt", "meta_file": "jobs/raw/creator-messaging-audit.meta.json", "track": "B", "expected": "SKIP"},
+    {"id": "quebec-brokerage-platform", "job_file": "jobs/raw/quebec-brokerage-platform.txt", "meta_file": "jobs/raw/quebec-brokerage-platform.meta.json", "track": "B", "expected": "SKIP"},
+    {"id": "senior-react-typescript", "job_file": "jobs/raw/senior-react-typescript.txt", "meta_file": "jobs/raw/senior-react-typescript.meta.json", "track": "B", "expected": "APPLY"}
+  ]
+}

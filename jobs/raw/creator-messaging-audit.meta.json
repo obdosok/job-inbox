@@ -1,0 +1,1 @@
+{"rate_min": 60, "rate_max": 90, "rate_period": "hour", "currency": "USD", "freshness_minutes": 5760, "proposals": 50, "interviewing": 16, "connect_cost": 16}

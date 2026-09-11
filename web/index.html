@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A local job inbox and decision workspace">
+  <title>Job Inbox</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">JOB INBOX / LOCAL</p>
+      <h1>Job Inbox</h1>
+    </div>
+    <div class="header-actions">
+      <span id="llm-status" class="system-status">Checking extractor…</span>
+      <button id="add-job-button" class="primary-button" type="button">+ Add jobs</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="summary" aria-labelledby="summary-title">
+      <div class="summary-heading">
+        <div><p class="eyebrow">DAILY BRIEF</p><h2 id="summary-title">Today</h2></div>
+        <time id="today-label"></time>
+      </div>
+      <div class="summary-grid">
+        <article><span id="jobs-found">0</span><p>jobs found</p></article>
+        <article><span id="auto-skipped">0</span><p>auto-skipped</p></article>
+        <article><span id="worth-reviewing">0</span><p>worth reviewing</p></article>
+        <article class="top-picks"><p>Top recommendations</p><ol id="top-recommendations"><li>Nothing ranked yet</li></ol></article>
+      </div>
+    </section>
+
+    <section class="inbox" aria-labelledby="inbox-title">
+      <div class="inbox-toolbar">
+        <div>
+          <p class="eyebrow">DECISION QUEUE</p>
+          <h2 id="inbox-title">Inbox</h2>
+        </div>
+        <nav id="filters" class="filters" aria-label="Job filters">
+          <button class="active" data-filter="today">Today <span>0</span></button>
+          <button data-filter="apply">Apply <span>0</span></button>
+          <button data-filter="maybe">Maybe <span>0</span></button>
+          <button data-filter="skip">Skip <span>0</span></button>
+        </nav>
+      </div>
+      <div id="notice" class="notice" hidden></div>
+      <div id="job-list" class="job-list" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <dialog id="ingest-dialog">
+    <form id="ingest-form">
+      <div class="dialog-head"><div><p class="eyebrow">INGEST</p><h2>Add jobs</h2></div><button class="icon-button ingest-close" type="button" aria-label="Close">×</button></div>
+      <div class="source-tabs" role="tablist">
+        <button type="button" class="active" data-source="manual">Paste</button>
+        <button type="button" data-source="file">File</button>
+        <button type="button" data-source="nofluffjobs">Feed</button>
+        <button type="button" data-source="greenhouse">Greenhouse</button>
+      </div>
+      <label>Track<select id="track"><option value="B">B — bridge cash flow</option><option value="A">A — stable role</option></select></label>
+      <div class="source-panel" data-panel="manual">
+        <label>Title <input id="manual-title" placeholder="Optional — inferred from first line"></label>
+        <label>Company <input id="manual-company" placeholder="Optional"></label>
+        <label>Job description <textarea id="manual-description" rows="13" placeholder="Paste the complete description"></textarea></label>
+      </div>
+      <div class="source-panel" data-panel="file" hidden>
+        <label>Text file <input id="job-file" type="file" accept=".txt,.md,text/plain,text/markdown"></label>
+        <p class="field-help">The file stays local; its text is sent only to this local server and, when configured, to the selected LLM extractor.</p>
+      </div>
+      <div class="source-panel" data-panel="nofluffjobs" hidden>
+        <label>Category<select id="nfj-category">
+          <option value="frontend">Frontend</option>
+          <option value="fullstack">Fullstack</option>
+          <option value="backend">Backend</option>
+          <option value="testing">Testing</option>
+        </select></label>
+        <label>Seniority<select id="nfj-seniority">
+          <option value="senior,expert">Senior and expert</option>
+          <option value="senior">Senior only</option>
+          <option value="">Every grade</option>
+        </select></label>
+        <label>Maximum postings to read <input id="nfj-limit" type="number" value="60" min="1" max="200"></label>
+        <p class="field-help">Fetches and scores the board without calling the model, so this costs nothing. Assess the ones worth reading from their cards afterwards.</p>
+      </div>
+      <div class="source-panel" data-panel="greenhouse" hidden>
+        <label>Public board token <input id="greenhouse-board" placeholder="Example: stripe"></label>
+        <label>Maximum jobs <input id="greenhouse-limit" type="number" value="25" min="1" max="100"></label>
+        <p class="field-help">Read-only import from Greenhouse's public job-board API. No account, scraping, or application actions.</p>
+      </div>
+      <div class="dialog-actions"><button type="button" class="secondary-button ingest-close">Cancel</button><button id="ingest-submit" type="submit" class="primary-button">Evaluate and add</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="prepare-dialog">
+    <div class="dialog-head"><div><p class="eyebrow">APPLICATION WORKBENCH</p><h2 id="prepare-title">Prepare application</h2></div><button class="icon-button" id="prepare-close" aria-label="Close">×</button></div>
+    <div id="prepare-content"></div>
+    <form id="outcome-form" class="outcome-form">
+      <h3>Record outcome</h3>
+      <div class="outcome-fields">
+        <label>Stage<select id="outcome-stage"><option value="applied">Applied</option><option value="replied">Replied</option><option value="recruiter-screen">Recruiter screen</option><option value="technical-interview">Technical interview</option><option value="rejected">Rejected</option><option value="offer">Offer</option><option value="accepted">Accepted</option></select></label>
+        <label>Date<input id="outcome-date" type="date" required></label>
+      </div>
+      <label>Notes<textarea id="outcome-notes" rows="3" placeholder="Optional evidence for later calibration"></textarea></label>
+      <button class="secondary-button" type="submit">Save outcome</button>
+    </form>
+    <p class="safety-note">Nothing is submitted automatically.</p>
+  </dialog>
+
+  <template id="empty-template"><div class="empty-state"><p class="empty-mark">0</p><h3>No jobs in this view</h3><p>Add a description or import a public Greenhouse board.</p></div></template>
+  <script src="/app.js"></script>
+</body>
+</html>

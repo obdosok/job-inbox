@@ -1,0 +1,3 @@
+Senior Shopify Public App Engineer
+
+Rate: $35-45/h. We require an engineer who has shipped a Shopify public app and can name it. Must have production experience with Shopify OAuth, Admin GraphQL, webhooks, App Bridge and extensions. The system uses PostgreSQL locking, isolation and idempotency for billing and webhook processing.

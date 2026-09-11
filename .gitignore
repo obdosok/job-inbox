@@ -1,0 +1,9 @@
+__pycache__/
+*.py[cod]
+tmp/
+data/*.sqlite3*
+.env
+.env.*
+!.env.example
+*.pdf
+candidate/profile.md

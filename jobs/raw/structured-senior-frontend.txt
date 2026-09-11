@@ -1,0 +1,46 @@
+Senior Frontend Engineer (React, TypeScript) - B2B payments platform
+
+We are hiring a senior frontend engineer to build the web application for a B2B payments and reconciliation platform. You will work with product, design and backend engineers on data-heavy screens that finance teams use every day.
+
+
+What You'll Do
+
+* Build dashboards, dynamic forms and data-driven interfaces in React and TypeScript
+* Design reusable frontend architecture and components shared across product areas
+* Integrate the frontend with backend REST APIs and real-time data streams
+* Optimize rendering and data loading for large tables and reports
+* Take features from requirements through architecture, implementation, testing and release
+* Review code and help set frontend engineering standards
+
+
+Frontend
+
+* React
+* TypeScript
+* Next.js
+* Accessible, responsive UI development
+
+UI & Design
+
+* Tailwind CSS
+* Component libraries / design systems
+* Strong attention to visual details and pixel-perfect implementation
+
+
+React Native
+
+Experience with React Native / Expo is a strong plus, particularly if you have shared code between web and mobile.
+
+
+Requirements
+
+* 5+ years of professional software engineering experience
+* Expert-level React and TypeScript knowledge
+* Experience building production applications over complex data
+* Clear written communication
+
+
+Engagement
+
+* Remote, long-term contract
+* Flexible hours with some overlap with US Eastern Time

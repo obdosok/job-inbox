@@ -1,0 +1,41 @@
+{
+  "note": "Boards polled by `python -m src.cli ingest watchlist`. Every entry was verified to answer with public JSON; a board that goes away is reported and skipped, not fatal. JSON syntax on purpose - it is valid YAML and keeps the project dependency-free.",
+
+  "boards": [
+    {"adapter": "ashby", "board": "oviva", "track": "A",
+     "label": "Oviva - diabetes and nutrition therapy, EU",
+     "why": "Closest to the diabetes domain among boards with a readable API. Small, so openings are rare - that is what polling is for."},
+
+    {"adapter": "ashby", "board": "zoe", "track": "A",
+     "label": "ZOE - metabolic health, continuous glucose",
+     "why": "Glucose response and personal metabolic data; the domain overlaps diabetes tooling directly."},
+
+    {"adapter": "ashby", "board": "docplanner", "track": "A",
+     "label": "Docplanner / ZnanyLekarz - Polish, remote within Poland",
+     "why": "The only large health employer that hires remote inside Poland, so conditions fit without relocation."},
+
+    {"adapter": "ashby", "board": "amboss", "track": "A",
+     "label": "AMBOSS - medical education, Berlin",
+     "why": "Frontend-heavy product. Remote is within Germany only; treat as relocation unless that changes."},
+
+    {"adapter": "ashby", "board": "doctolib", "track": "A",
+     "label": "Doctolib - health booking, Kotlin + React",
+     "why": "The precise stack match: Kotlin and React in one role. Berlin/Paris hybrid, and they ask for German health-system knowledge."},
+
+    {"adapter": "ashby", "board": "nelly", "track": "A",
+     "label": "Nelly - medical practice payments, Berlin",
+     "why": "Money flows in a medical setting - transactions and billing are the strongest part of the record."},
+
+    {"adapter": "greenhouse", "board": "biofourmis", "track": "A",
+     "label": "Biofourmis - remote patient monitoring",
+     "why": "Chronic-condition monitoring, the same problem shape as diabetes self-management."},
+
+    {"adapter": "greenhouse", "board": "omadahealth", "track": "A",
+     "label": "Omada Health - diabetes prevention",
+     "why": "Best thematic fit found anywhere, but every opening so far is Remote, USA. Polled so a non-US role is noticed the day it appears."},
+
+    {"adapter": "greenhouse", "board": "swordhealth", "track": "A",
+     "label": "Sword Health - digital physical therapy",
+     "why": "European roots, remote-friendly; engineering openings come and go."}
+  ]
+}
